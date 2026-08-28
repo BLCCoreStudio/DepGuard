@@ -1,33 +1,44 @@
 # DepGuard
 
-**Dependency verification CLI for detecting suspicious, immature, or potentially hallucinated packages before installation.**
+**Dependency review CLI for catching risky manifest patterns before installation.**
 
-> **Status:** early development. No stable release has been published.
+> **Status:** development preview. No stable release has been published.
 
-DepGuard is intended to put a review step between an AI-generated dependency suggestion and the package-manager install command.
+DepGuard puts a review step between a dependency suggestion and the package-manager install command. The current preview performs deterministic **local manifest checks**; it does not claim that a package is safe, malicious, real, or hallucinated.
 
-## Planned v0.1
+## Current preview
 
-The first release will focus on package identity and registry metadata rather than pretending to determine whether a package is universally safe.
+Supported manifests:
 
-Planned signals include:
+- `Cargo.toml`
+- `package.json`
+- `requirements.txt`
 
-- package existence in the selected registry
-- package age and publication history
-- repository/homepage presence when supplied by the registry
-- suspiciously similar package names
-- unusually limited publisher/package history
-- clear separation between facts and heuristic risk signals
+Current review signals include:
 
-Initial ecosystem targets are expected to be npm, PyPI, and crates.io. Network-backed registry checks are not implemented in the current scaffold yet.
+- wildcard or floating versions such as `*` and `latest`
+- unconstrained Python requirements
+- Git, path, URL, VCS, and other direct dependency sources
+
+Example:
+
+```bash
+depguard scan Cargo.toml
+```
+
+A clean scan exits `0`. Review signals exit `3`. Usage or read errors exit `2`.
+
+## Scope
+
+Registry-backed package-existence, age, publisher-history, repository metadata, and look-alike-name checks are planned. Until those checks exist, DepGuard will not label a dependency as a hallucinated package or make a universal safety judgment.
 
 ## Build
 
 Requires Rust 1.74 or newer.
 
 ```bash
-cargo build
-cargo test
+cargo build --locked
+cargo test --locked
 ```
 
 ## Security

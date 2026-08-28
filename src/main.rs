@@ -60,7 +60,9 @@ fn scan_cargo_toml(input: &str) -> Vec<Finding> {
         let line_no = index + 1;
         let line = raw.trim();
         if line.starts_with('[') && line.ends_with(']') {
-            let section = line.trim_matches(['[', ']']).to_ascii_lowercase();
+            let section = line
+                .trim_matches(|ch| ch == '[' || ch == ']')
+                .to_ascii_lowercase();
             dependency_section = section.contains("dependencies");
             continue;
         }
@@ -75,7 +77,9 @@ fn scan_cargo_toml(input: &str) -> Vec<Finding> {
         let value = value.trim();
         let normalized = value.replace(' ', "").to_ascii_lowercase();
 
-        if value.trim_matches(['"', '\'']) == "*" || normalized.contains("version=\"*\"") {
+        if value.trim_matches(|ch| ch == '"' || ch == '\'') == "*"
+            || normalized.contains("version=\"*\"")
+        {
             findings.push(finding(
                 line_no,
                 "wildcard-version",
@@ -132,11 +136,7 @@ fn scan_package_json(input: &str) -> Vec<Finding> {
             continue;
         };
         let name = name.trim().trim_matches('"');
-        let value = value
-            .trim()
-            .trim_end_matches(',')
-            .trim()
-            .trim_matches('"');
+        let value = value.trim().trim_end_matches(',').trim().trim_matches('"');
         let lower = value.to_ascii_lowercase();
 
         if value == "*" || lower == "latest" {
@@ -249,9 +249,8 @@ mod tests {
 
     #[test]
     fn npm_flags_latest() {
-        let findings = scan_package_json(
-            "{\n  \"dependencies\": {\n    \"left-pad\": \"latest\"\n  }\n}\n",
-        );
+        let findings =
+            scan_package_json("{\n  \"dependencies\": {\n    \"left-pad\": \"latest\"\n  }\n}\n");
         assert_eq!(findings.len(), 1);
         assert_eq!(findings[0].code, "floating-version");
     }

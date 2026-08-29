@@ -1,10 +1,16 @@
 # DepGuard
 
-**Focused dependency-manifest review before installation.**
+**Review dependency manifests for risky or weakly constrained entries before you install anything.**
 
 > **Status:** development preview. No stable release has been published.
 
-DepGuard puts a small, deterministic review step between a dependency suggestion and the package-manager install command. The current preview performs **local manifest checks**; it does not claim that a package is safe, malicious, real, or hallucinated.
+DepGuard is a small local CLI that scans `Cargo.toml`, `package.json`, and `requirements.txt` before the package-manager install step. It highlights entries that deserve human review — such as wildcard versions, unconstrained requirements, and direct Git/path/URL dependencies — without claiming that a package is safe or malicious.
+
+```bash
+depguard scan Cargo.toml
+depguard scan package.json
+depguard scan requirements.txt
+```
 
 ## Current preview
 
@@ -19,12 +25,6 @@ Current review signals include:
 - wildcard or floating versions such as `*` and `latest`
 - unconstrained Python requirements
 - Git, path, URL, VCS, and other direct dependency sources
-
-Example:
-
-```bash
-depguard scan Cargo.toml
-```
 
 A clean scan exits `0`. Review signals exit `3`. Usage or read errors exit `2`.
 

@@ -1,8 +1,8 @@
 # DepGuard
 
-**Review dependency manifests for risky or weakly constrained entries before you install anything.**
+**Focused pre-install dependency-manifest review research.**
 
-> **Status:** development preview. No stable release has been published.
+> **Status: maintenance-only companion project.** New repository-level dependency diagnostics and integration work should target [RepoDoctor](https://github.com/BLCCoreStudio/RepoDoctor). DepGuard remains public to preserve its focused implementation, history, and existing links.
 
 DepGuard is a small local CLI that scans `Cargo.toml`, `package.json`, and `requirements.txt` before the package-manager install step. It highlights entries that deserve human review — such as wildcard versions, unconstrained requirements, and direct Git/path/URL dependencies — without claiming that a package is safe or malicious.
 
@@ -12,7 +12,7 @@ depguard scan package.json
 depguard scan requirements.txt
 ```
 
-## Current preview
+## Current implementation
 
 Supported manifests:
 
@@ -30,19 +30,15 @@ A clean scan exits `0`. Review signals exit `3`. Usage or read errors exit `2`.
 
 ## Relationship to RepoDoctor
 
-RepoDoctor already has broader repository-level dependency diagnostics, while DepGuard is intentionally narrower: it explores **pre-install manifest review** as a small standalone CLI.
+[RepoDoctor](https://github.com/BLCCoreStudio/RepoDoctor) is the primary maintained repository-health product and already covers broader dependency diagnostics alongside security, testing, CI/CD, documentation, configuration, and architecture.
 
-The two products will not be allowed to grow duplicate rule sets blindly. An integration evaluation is tracked in the private RepoDoctor development repository to map existing rule coverage, identify genuinely new DepGuard signals, and avoid duplicate findings/scoring before any shared behavior is moved into RepoDoctor.
+DepGuard is intentionally kept narrow and should not grow a second competing dependency-analysis product. Useful rules may be promoted into RepoDoctor when they add non-duplicative value and can be integrated with appropriate tests and scoring semantics.
 
-Until that evaluation is complete:
+For new integrated dependency-health work, use **RepoDoctor**.
 
-- DepGuard remains a focused development preview
-- RepoDoctor remains the primary full-repository diagnostics product
-- overlapping behavior should not be advertised as separate innovation
+## Scope and limitations
 
-## Scope
-
-Registry-backed package-existence, age, publisher-history, repository metadata, and look-alike-name checks are not implemented in the current preview. Until such checks exist, DepGuard will not label a dependency as a hallucinated package or make a universal safety judgment.
+Registry-backed package-existence, age, publisher-history, repository metadata, and look-alike-name checks are not implemented here. DepGuard does not label dependencies as malicious, hallucinated, or universally safe.
 
 ## Build
 
